@@ -49,7 +49,6 @@ void recover_from_sleep(uint scb_orig, uint clock0_orig, uint clock1_orig){
     clocks_hw->sleep_en1 = clock1_orig;
 
     //reset clocks
-    clocks_init();
     stdio_init_all();
 
     return;
@@ -110,6 +109,9 @@ int main() {
     while (true) {
         gpio_put(LED_PIN, 1);
         sleep_ms(2000);
+        // Current draw on a Pico should be ~24.8 mA @ 3.3V at that point the first time the execution reached here, because sys_clk is 125 MHz
+        // In subsequent times, it will always be only ~5.65 mA due to the sys_clk being 12 Mhz
+
 
         awake = false;
         printf("Sleep from xosc\n");
@@ -120,6 +122,8 @@ int main() {
         rtc_set_datetime(&t);
         //sleep here, in this case for 1 min
         rtc_sleep(46,0);
+        // During this one minute sleep, the current draw is 4.13 mA @ 3.3V.
+        // With the LED off, it would be only 1.47 mA!
 
         //will return here and awake should be true
         while (!awake) {
@@ -143,5 +147,6 @@ int main() {
         printf("Sleep from sleep_ms\n");
         uart_default_tx_wait_blocking();
         sleep_ms(2000);
+        // During this 2 second not-so-deep sleep w/ the the LED off, the current consumption is ~3.06 mA @ 3.3V
     }
 }
