@@ -1,5 +1,6 @@
 #include "pico/sleep.h"
 #include "pico/stdlib.h"
+#include "pico/runtime_init.h"
 #include <stdint.h>
 #include <string.h>
 #include <stdio.h>
@@ -49,6 +50,10 @@ void recover_from_sleep(uint scb_orig, uint clock0_orig, uint clock1_orig){
     clocks_hw->sleep_en1 = clock1_orig;
 
     //reset clocks
+<<<<<<< Updated upstream
+=======
+    runtime_init_clocks();
+>>>>>>> Stashed changes
     stdio_init_all();
 
     return;
@@ -109,9 +114,7 @@ int main() {
     while (true) {
         gpio_put(LED_PIN, 1);
         sleep_ms(2000);
-        // Current draw on a Pico should be ~24.8 mA @ 3.3V at that point the first time the execution reached here, because sys_clk is 125 MHz
-        // In subsequent times, it will always be only ~5.65 mA due to the sys_clk being 12 Mhz
-
+        // Current draw on a Pico is ~24.8 mA @ 3.3V
 
         awake = false;
         printf("Sleep from xosc\n");
@@ -147,6 +150,6 @@ int main() {
         printf("Sleep from sleep_ms\n");
         uart_default_tx_wait_blocking();
         sleep_ms(2000);
-        // During this 2 second not-so-deep sleep w/ the the LED off, the current consumption is ~3.06 mA @ 3.3V
+        // During this 2 second not-so-deep sleep w/ the the LED off, the current consumption is 22.4 mA @ 3.3V
     }
 }
